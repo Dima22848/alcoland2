@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Алкогольный каталог{% endblock %}
+
+{% block content %}
+<div class="grid-container">
+    <!-- Сайдбар -->
+    <div class="sidebar">
+        <h2>Категории</h2>
+        <ul>
+            <li><a href="?q=пиво">Пиво</a></li>
+            <li><a href="?q=вино">Вино</a></li>
+            <li><a href="?q=коньяк">Коньяк</a></li>
+            <li><a href="?q=водка">Водка</a></li>
+            <li><a href="?q=виски">Виски</a></li>
+        </ul>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="content">
+        <!-- Сетка элементов 3 на 5 -->
+        {% for item in page_obj %}
+            <div class="item">
+                <h3>{{ item.name }}</h3>  <!-- Замените "name" на нужное поле -->
+                <p>{{ item.description }}</p>  <!-- Замените "description" на нужное поле -->
+            </div>
+        {% empty %}
+            <p>Нет доступных элементов для отображения.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Пагинация -->
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?q={{ q }}&page=1">Первая</a>
+        <a href="?q={{ q }}&page={{ page_obj.previous_page_number }}">Предыдущая</a>
+    {% endif %}
+
+    <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+        <a href="?q={{ q }}&page={{ page_obj.next_page_number }}">Следующая</a>
+        <a href="?q={{ q }}&page={{ page_obj.paginator.num_pages }}">Последняя</a>
+    {% endif %}
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+

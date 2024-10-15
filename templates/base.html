@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Алкогольный магазин{% endblock %}</title>
+    <style>
+        /* Основная Grid-сетка для базового шаблона */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Главная сетка, 1fr для контента */
+        .main-grid {
+            display: grid;
+            grid-template-rows: auto 1fr; /* Навбар + контент */
+            min-height: 100vh;
+        }
+
+        /* Навбар */
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+
+        /* Контентная часть */
+        .content-container {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-grid">
+    <!-- Навигационная панель -->
+    <nav>
+        <ul>
+            <li><a href="/">Главная</a></li>
+            <li><a href="/catalog">Каталог</a></li>
+            <li><a href="/contact">Контакты</a></li>
+        </ul>
+    </nav>
+
+    <!-- Контейнер для основного контента страницы -->
+    <div class="content-container">
+        {% block content %}
+        <!-- Здесь будет основной контент дочерних шаблонов -->
+        {% endblock %}
+    </div>
+</div>
+
+</body>
+</html>

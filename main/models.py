@@ -1,4 +1,6 @@
 from django.db import models
+from django.urls import reverse
+
 
 class Category(models.Model):
     name = models.CharField(max_length=60, verbose_name='Вид алкоголя')
@@ -40,6 +42,9 @@ class Beer_characters(models.Model):
         verbose_name = 'Пиво'
         verbose_name_plural = 'Пиво'
 
+    def get_absolute_url(self):
+        return reverse('detail', kwargs={"slug": 'pivo', "pk": self.pk})
+
 class Cognak_characters(models.Model):
     name = models.CharField(max_length=150, verbose_name='Название')
     price = models.IntegerField(verbose_name='Цена')
@@ -66,6 +71,8 @@ class Cognak_characters(models.Model):
         verbose_name = 'Коньяк'
         verbose_name_plural = 'Коньяк'
 
+    def get_absolute_url(self):
+        return reverse('detail', kwargs={"slug": 'cognac', "pk": self.pk})
 
 class Vine_characters(models.Model):
     name = models.CharField(max_length=150, verbose_name='Название')
@@ -90,6 +97,8 @@ class Vine_characters(models.Model):
         verbose_name = 'Вино'
         verbose_name_plural = 'Вино'
 
+    def get_absolute_url(self):
+        return reverse('detail', kwargs={"slug": 'vino', "pk": self.pk})
 
 class Vodka_characters(models.Model):
     name = models.CharField(max_length=150, verbose_name='Название')
@@ -119,6 +128,8 @@ class Vodka_characters(models.Model):
         verbose_name = 'Водка'
         verbose_name_plural = 'Водка'
 
+    def get_absolute_url(self):
+        return reverse('detail', kwargs={"slug": 'vodka', "pk": self.pk})
 
 class Whiskey_characters(models.Model):
     name = models.CharField(max_length=150, verbose_name='Название')
@@ -150,6 +161,7 @@ class Whiskey_characters(models.Model):
         verbose_name = 'Виски'
         verbose_name_plural = 'Виски'
 
-
+    def get_absolute_url(self):
+        return reverse('detail', kwargs={"slug": 'whiskey', "pk": self.pk})
 
 

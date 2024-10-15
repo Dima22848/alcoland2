@@ -31,16 +31,16 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'account.apps.AccountConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main',
+    'main.apps.MainConfig',
     'main.parse',
     'rest_framework',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -51,7 +51,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
 ]
 
 REST_FRAMEWORK = {
@@ -65,7 +64,7 @@ ROOT_URLCONF = 'alcoland2.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -93,16 +92,18 @@ WSGI_APPLICATION = 'alcoland2.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydatabase',
+        # 'ENGINE': 'django.db.backends.postgresql',
         # 'HOST': os.environ.get('DB_HOST'),
         # 'NAME': os.environ.get('DB_NAME'),
         # 'USER': os.environ.get('DB_USER'),
         # 'PASSWORD': os.environ.get('DB_PASS'),
-        'USER': 'postgres',
-        'PASSWORD': 'dimasik10082001',
-        'NAME': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5482',
+        # 'USER': 'postgres',
+        # 'PASSWORD': 'dimasik10082001',
+        # 'NAME': 'postgres',
+        # 'HOST': 'localhost',
+        # 'PORT': '5482',
     }
 }
 
