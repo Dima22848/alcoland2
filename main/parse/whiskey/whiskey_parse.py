@@ -1,10 +1,16 @@
+import csv
+import io
 import re
 import time
 from time import sleep
-
+import os
 
 import requests
+from PIL import Image
 from bs4 import BeautifulSoup
+
+# Получаем путь до директории, где находится текущий файл
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"}
 
@@ -16,10 +22,14 @@ whiskey_list = []
 
 def download_whiskey_url(url):
     photo_url = requests.get(url, stream=True)
-    r = open("C:\\Users\\Game-On-Dp\\Desktop\\my-projects\\Django+React\\backend\\media\\parse\\image\\whiskey\\" + url.split('/')[-1] + '.png', 'wb')
-    for value in photo_url.iter_content(1024*1024):
-        r.write(value)
-    r.close()
+    # Строим относительный путь до папки "media/parse/image/whiskey"
+    image_path = os.path.join(BASE_DIR, 'media', 'parse', 'image', 'whiskey', url.split('/')[-1])
+    directory = os.path.dirname(image_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    image = Image.open(io.BytesIO(photo_url.content))
+    image.save(image_path)
 
 def get_whiskey_url():
     for x in range(1,3):
@@ -32,6 +42,13 @@ def get_whiskey_url():
             yield card_url
 
 def whiskey_array():
+    with open('whiskey_data.csv', 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(
+            ['Название', 'Цена', 'Бренд', 'Страна', 'Вид напитка', 'Вкус', 'Аромат', 'Выдержка', 'Объем', 'Крепость',
+             'Жиры', 'Углеводы', 'Белки', 'Калорийность (ккал)', 'Влажность', 'Температура хранения', 'Срок годности',
+             'Условия хранения', 'Описание', 'Ссылка на изображение'])
+
     for card_url in get_whiskey_url():
             response = requests.get(card_url, headers=headers)
             sleep(3)
@@ -127,6 +144,12 @@ def whiskey_array():
 
             whiskey_list.append([name.lstrip(), str_to_float_number(price), brand, country, vid, taste, favor, excerpt, str_to_float_number(volume), str_to_float_number(strength), fats, carbohydrates, proteins, calorie_content_kcal, humidity, storage_temperature, expiration_date, storage_conditions, description, f"parse/image/whiskey/{image_url_edited}"])
             print(name, '\n', image_url, '\n', price, '\n', brand, '\n', country, '\n', vid, '\n', taste, '\n', favor, '\n', excerpt, '\n', volume, '\n', strength, '\n', fats, '\n', carbohydrates, '\n', proteins, '\n', calorie_content_kcal, '\n', humidity, '\n', storage_temperature, '\n', expiration_date, '\n', storage_conditions, '\n', description, '\n\n')
+
+            csv_file_path = os.path.join(BASE_DIR, 'whiskey_data.csv')
+            # Записываем в файл каждую строку данных в режиме добавления
+            with open(csv_file_path, 'a', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                writer.writerow(whiskey_list[-1])  # записываем последнюю добавленную строку в файл
 
 # whiskey_array()
 

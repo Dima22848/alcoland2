@@ -1,6 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 from time import sleep
+import os
+
+# Получаем путь до директории, где находится текущий файл
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"}
@@ -12,7 +17,12 @@ beer_list = []
 
 def download_beer_url(url):
     photo_url = requests.get(url, stream=True)
-    r = open("C:\\Users\\Game-On-Dp\\Desktop\\my-projects\\Django+React\\backend\\media\\parse\\image\\beer\\" + url.split('/')[-1], 'wb')
+    # Строим относительный путь до папки "media/parse/image/beer"
+    image_path = os.path.join(BASE_DIR, 'media', 'parse', 'image', 'beer', url.split('/')[-1])
+    directory = os.path.dirname(image_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    r = open(image_path, 'wb')
     for value in photo_url.iter_content(1024*1024):
         r.write(value)
     r.close()
@@ -42,13 +52,19 @@ def beer_array():
         density = data.find('div', class_='product-params-item-title', string='Плотность').find_parent('div').find('span', class_='text-bold').text
         image_url = 'https://hophey.ua/' + data.find('img')['_src']
 
+
         extra_data1 = soup.find('div', class_='flex-fill product-detail-description-column')
         favor = extra_data1.find('p', string='Аромат').find_next_sibling().text
         taste = extra_data1.find('p', string='Вкус').find_next_sibling().text
         aftertaste = extra_data1.find('p', string='Послевкусие').find_next_sibling().text
-        composition = extra_data1.find('p', string='Состав').find_next_sibling().text
-        is_combined = extra_data1.find('p', string='С чем сочетается').find_next_sibling().text
-
+        try:
+            composition = extra_data1.find('p', string='Состав').find_next_sibling().text
+        except:
+            composition = ''
+        try:
+            is_combined = extra_data1.find('p', string='С чем сочетается').find_next_sibling().text
+        except:
+            is_combined = ''
         extra_data2 = soup.find('div', class_='d-flex product-detail-description accordeon-body bg-white')
         country = extra_data2.find('p', string='Страна').find_next_sibling().text
         type = extra_data2.find('p', string='Тип').find_next_sibling().text

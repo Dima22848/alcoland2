@@ -1,9 +1,13 @@
 import re
 import time
 from time import sleep
+import os
 
 import requests
 from bs4 import BeautifulSoup
+
+# Получаем путь до директории, где находится текущий файл
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"}
 
@@ -12,7 +16,12 @@ cognak_url = 'https://winestory.com.ua/ru/konjak.html'
 cognak_list = []
 def download_cognak_url(url):
     photo_url = requests.get(url, stream=True)
-    r = open("C:\\Users\\Game-On-Dp\\Desktop\\my-projects\\Django+React\\backend\\media\\parse\\image\\cognak\\" + url.split('/')[-1] + '.png', 'wb')
+    # Строим относительный путь до папки "media/parse/image/cognak"
+    image_path = os.path.join(BASE_DIR, 'media', 'parse', 'image', 'cognak', url.split('/')[-1])
+    directory = os.path.dirname(image_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    r = open(image_path, 'wb')
     for value in photo_url.iter_content(1024*1024):
         r.write(value)
     r.close()

@@ -1,6 +1,14 @@
+import csv
+
 import requests
 from bs4 import BeautifulSoup
 from time import sleep
+import os
+from PIL import Image
+import io
+
+# Получаем путь до директории, где находится текущий файл
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"}
 
@@ -9,10 +17,20 @@ vine_url = 'https://winewine.com.ua/ru/wine/'
 vine_list = []
 def download_vine_url(url):
     photo_url = requests.get(url, stream=True)
-    r = open("C:\\Users\\Game-On-Dp\\Desktop\\my-projects\\Django+React\\backend\\media\\parse\\image\\vine\\" + url.split('/')[-1], 'wb')
-    for value in photo_url.iter_content(1024*1024):
-        r.write(value)
-    r.close()
+    # Строим относительный путь до папки "media/parse/image/vine"
+    image_name = url.split('/')[-1]
+    if not image_name.endswith('.png'):
+        image_name += '.png'
+
+    image_path = os.path.join(BASE_DIR, 'media', 'parse', 'image', 'vine', image_name)
+    directory = os.path.dirname(image_path)
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    image = Image.open(io.BytesIO(photo_url.content))
+    image.save(image_path)
+
 
 
 def get_vine_url():
@@ -28,6 +46,12 @@ def get_vine_url():
 
 
 def vine_array():
+    with open('vine_data.csv', 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(
+            ['Название', 'Цена', 'Цвет', 'Страна', 'Крепость', 'Тип', 'Бренд', 'Сахар', 'Регион', 'Стиль', 'Сорт',
+             'Классификация', 'Ссылка на изображение'])
+
     for card_url in get_vine_url():
         sleep(3)
         print(card_url)
@@ -102,6 +126,12 @@ def vine_array():
 
         vine_list.append([name, str_to_float_number(price), color, country, str_to_float_number(alcgol_percentage), type, brand, sugar, region, style, sort, classification, f"parse/image/vine/{image_url_edited}"])
         # print(name, '\n', image_url, '\n', price, '\n', color , '\n' , country , '\n' , alcgol_percentage , '\n' , type , '\n' , brand, '\n' , sugar, '\n', region, '\n', style, '\n', sort, '\n', classification, '\n\n')
+
+        csv_file_path = os.path.join(BASE_DIR, 'vine_data.csv')
+        # Записываем в файл каждую строку данных в режиме добавления
+        with open(csv_file_path, 'a', newline='', encoding='utf-8') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(vine_list[-1])  # записываем последнюю добавленную строку в файл
 
 # vine_array()
 

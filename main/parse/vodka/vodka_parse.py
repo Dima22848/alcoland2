@@ -1,10 +1,16 @@
+import io
 import re
 import time
 from time import sleep
-
-
+import os
+from PIL import Image
+from io import BytesIO
+import csv
 import requests
 from bs4 import BeautifulSoup
+
+# Получаем путь до директории, где находится текущий файл
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"}
 
@@ -14,10 +20,25 @@ vodka_url_general = 'https://rumka.online'
 vodka_list = []
 def download_vodka_url(url):
     photo_url = requests.get(url, stream=True)
-    r = open("C:\\Users\\Game-On-Dp\\Desktop\\my-projects\\Django+React\\backend\\media\\parse\\image\\vodka\\" + url.split('/')[-1] + '.png', 'wb')
-    for value in photo_url.iter_content(1024*1024):
-        r.write(value)
-    r.close()
+    # Строим относительный путь до папки "media/parse/image/vodka"
+    image_name = url.split('/')[-1].replace('.webp', '')
+
+    image_path = os.path.join(BASE_DIR, 'media', 'parse', 'image', 'vodka', image_name)
+    directory = os.path.dirname(image_path)
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    image = Image.open(io.BytesIO(photo_url.content))
+    image.save(image_path)
+
+    # # Сохраняем изображение
+    # with open(image_path, 'wb') as f:
+    #        f.write(photo_url.content)
+    # # Дополнительная обработка, если требуется
+    # with Image.open(image_path) as img:
+    #     img = img.convert('RGB')  # Преобразуем в RGB
+    #     img.save(image_path)  # Сохраняем обратно
 
 def get_vodka_url():
     for x in range(1,4):
@@ -111,7 +132,18 @@ def vodka_array():
                 return None
 
             vodka_list.append([name, str_to_float_number(price), brand.lstrip(), country.lstrip(), str_to_float_number(volume), str_to_float_number(amount_in_box), vid.lstrip(), str_to_float_number(strength), excerpt.lstrip(), supply_temperature, taste.lstrip(), color.lstrip(), coctails.lstrip(), gastronomic_compatibility.lstrip(), sizes.lstrip(), weight.lstrip(), description.lstrip().replace('\n', '').replace('\t', '').replace('  ', ''), f"parse/image/vodka/{image_url_edited}"])
-            print(name, '\n',image_url, '\n', price, '\n', brand, '\n', country, '\n', volume, '\n', amount_in_box, '\n', vid, '\n', strength, '\n', excerpt, '\n', supply_temperature, '\n', taste, '\n', color, '\n', coctails, '\n', gastronomic_compatibility, '\n', sizes, '\n', weight, '\n', description, '\n\n')
+            print(x.encode('ascii', 'ignore').decode('ascii') for x in (name, '\n', image_url, '\n', price, '\n', brand, '\n', country, '\n', volume, '\n', amount_in_box, '\n', vid, '\n', strength, '\n', excerpt, '\n', supply_temperature, '\n', taste, '\n', color, '\n', coctails, '\n', gastronomic_compatibility, '\n', sizes, '\n', weight, '\n', description, '\n\n'))
+
+            csv_file_path = os.path.join(BASE_DIR, 'vodka_data.csv')
+            with open(csv_file_path, 'w', newline='', encoding='utf-8-sig') as csvfile:
+                writer = csv.writer(csvfile)
+                # writer.writerow(vodka_list[-1])  # записываем последнюю добавленную строку в файл
+                writer.writerow(
+                    ['Название', 'Цена', 'Бренд', 'Страна', 'Объем', 'Штук в ящике', 'Вид', 'Крепость', 'Выдержка',
+                     'Температура подачи', 'Вкус', 'Цвет', 'Коктейли', 'Гастрономическая совместимость', 'Размеры',
+                     'Вес', 'Описание', 'Ссылка на изображение'])
+                for vodka in vodka_list:
+                    writer.writerow(vodka)
 
 # vodka_array()
 
